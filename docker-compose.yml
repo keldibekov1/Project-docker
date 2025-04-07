@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: nestjs-app
+    ports:
+      - "4000:4000" 
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/nestjsdb 
+    depends_on:
+      - db  
+    networks:
+      - nestjs-network
+
+  db:
+    image: postgres:13-alpine  
+    container_name: nestjs-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nestjsdb
+    ports:
+      - "5432:5432"  
+    networks:
+      - nestjs-network
+
+networks:
+  nestjs-network:
+    driver: bridge  
