@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/create-category.dto';
@@ -21,6 +22,8 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/guards/roles.decorator';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Category')
 @Controller('categories')
@@ -29,7 +32,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Yangi kategoriya yaratish' })
   @ApiBody({ type: CreateCategoryDto })
   @ApiResponse({ status: 201, description: 'Kategoriya yaratildi' })
@@ -38,6 +41,7 @@ export class CategoryController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor) 
   @Roles('ADMIN', 'SUPER_ADMIN', 'USER')
   @ApiOperation({ summary: 'Barcha kategoriyalarni olish (filter, sort, pagination)' })
   @ApiQuery({ name: 'search', required: false })

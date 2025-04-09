@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -22,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { Roles } from 'src/guards/roles.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Product')
 @Controller('products')
@@ -40,6 +42,7 @@ export class ProductController {
 
   @Get()
   @Roles('ADMIN', 'SUPER_ADMIN', 'USER')
+  @UseInterceptors(CacheInterceptor) 
   @ApiOperation({ summary: 'Barcha mahsulotlarni olish (filter, sort, pagination)' })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'sortBy', required: false, example: 'name' })
